@@ -555,20 +555,16 @@
 
             <div id="academicFields" class="hidden space-y-3">
               <input id="subjectInput" type="text" maxlength="100" placeholder="Nombre de la materia" class="w-full bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition" autocomplete="off">
-              <textarea id="academicDescription" rows="3" maxlength="500" placeholder="Descripción" class="w-full resize-none bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition"></textarea>
+              <textarea id="academicDescription" rows="3" maxlength="500" placeholder="Descripción (opcional)" class="w-full resize-none bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition"></textarea>
             </div>
 
             <div id="otherFields" class="hidden space-y-3">
               <input id="reminderInput" type="text" maxlength="120" placeholder="Título" class="w-full bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition" autocomplete="off">
-              <textarea id="otherDescription" rows="3" maxlength="500" placeholder="Descripción" class="w-full resize-none bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition"></textarea>
+              <textarea id="otherDescription" rows="3" maxlength="500" placeholder="Descripción (opcional)" class="w-full resize-none bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition"></textarea>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-[135px_1fr] gap-2">
-              <label class="relative">
-                <span class="sr-only">Horario</span>
-                <input id="reminderTime" type="time" required class="w-full bg-surface-800 border border-surface-600 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
-              </label>
-              <button type="submit" class="px-5 py-2.5 bg-white hover:bg-zinc-100 text-surface-950 font-medium text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 shrink-0">
+            <div>
+              <button type="submit" class="w-full px-5 py-2.5 bg-white hover:bg-zinc-100 text-surface-950 font-medium text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                 Agregar recordatorio
               </button>
@@ -680,7 +676,6 @@
     const subjectInput = document.getElementById('subjectInput');
     const academicDescription = document.getElementById('academicDescription');
     const otherDescription = document.getElementById('otherDescription');
-    const reminderTime = document.getElementById('reminderTime');
     const closeModalBtn = document.getElementById('closeModal');
     const modalBackdrop = document.getElementById('modalBackdrop');
     const colorPicker = document.getElementById('colorPicker');
@@ -754,7 +749,7 @@
     }
 
     function setFormEnabled(enabled) {
-      [reminderInput, reminderType, subjectInput, academicDescription, otherDescription, reminderTime].forEach(el => el.disabled = !enabled);
+      [reminderInput, reminderType, subjectInput, academicDescription, otherDescription].forEach(el => el.disabled = !enabled);
       submitBtn.disabled = !enabled;
       reminderInput.placeholder = enabled ? 'Título' : 'Iniciá sesión para crear recordatorios';
       addForm.classList.toggle('opacity-50', !enabled);
@@ -767,48 +762,38 @@
       })[char]);
     }
 
-    function getReminderDateTime(key, time = '') {
+    function getReminderDateTime(key) {
       const [year, month, day] = key.split('-').map(Number);
-      const [hours, minutes] = /^\d{2}:\d{2}$/.test(time) ? time.split(':').map(Number) : [23, 59];
-      return new Date(year, month - 1, day, hours, minutes, 0, 0);
+      return new Date(year, month - 1, day, 23, 59, 59, 999);
     }
 
-    function formatTime(time) {
-      return /^\d{2}:\d{2}$/.test(time || '') ? `${time} hs` : 'Sin horario';
-    }
+    function formatRemaining(key) {
+      const now = new Date();
+      const target = getReminderDateTime(key);
+      const diff = target - now;
+      if (diff < 0) return 'Vencido';
 
-    function formatRemaining(key, time) {
-      const diff = getReminderDateTime(key, time) - new Date();
-      if (diff < -60000) return 'Vencido';
-      if (diff <= 60000) return 'Ahora';
-      const totalMinutes = Math.ceil(diff / 60000);
-      const days = Math.floor(totalMinutes / 1440);
-      const hours = Math.floor((totalMinutes % 1440) / 60);
-      const minutes = totalMinutes % 60;
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const targetDay = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+      const days = Math.ceil((targetDay - today) / 86400000);
+
+      if (days === 0) return 'Vence hoy';
+      if (days === 1) return 'Falta 1 día';
       if (days > 30) {
         const months = Math.floor(days / 30);
         const remainingDays = days % 30;
         return `Faltan ${months} ${months === 1 ? 'mes' : 'meses'}${remainingDays ? ` y ${remainingDays} d` : ''}`;
       }
-      if (days > 0) return `Faltan ${days} d${hours ? ` y ${hours} h` : ''}`;
-      if (hours > 0) return `Faltan ${hours} h${minutes ? ` y ${minutes} min` : ''}`;
-      return `Faltan ${minutes} min`;
+      return `Faltan ${days} días`;
     }
 
-    function shouldAutoDeleteReminder(key, time) {
+    function shouldAutoDeleteReminder(key) {
       const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
-      return Date.now() - getReminderDateTime(key, time).getTime() >= ONE_WEEK;
+      return Date.now() - getReminderDateTime(key).getTime() >= ONE_WEEK;
     }
 
-    function isReminderExpired(key, time) {
-      return getReminderDateTime(key, time).getTime() < Date.now() - 60000;
-    }
-
-    function setDefaultReminderTime() {
-      const now = new Date();
-      now.setMinutes(0, 0, 0);
-      now.setHours(now.getHours() + 1);
-      reminderTime.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    function isReminderExpired(key) {
+      return getReminderDateTime(key).getTime() < Date.now();
     }
 
     // ==================== RENDER PICKERS ====================
@@ -922,8 +907,8 @@
       const all = [];
       Object.keys(reminders).forEach(key => {
         reminders[key].forEach(r => {
-          const date = getReminderDateTime(key, r.time);
-          all.push({ ...r, key, date, expired: isReminderExpired(key, r.time) });
+          const date = getReminderDateTime(key);
+          all.push({ ...r, key, date, expired: isReminderExpired(key) });
         });
       });
 
@@ -955,8 +940,8 @@
           <div class="min-w-0 flex-1">
             <p class="text-sm font-semibold ${c.text} truncate leading-snug">${escapeHTML(r.text)}</p>
             <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
-              <p class="text-[11px] text-zinc-500">${formatShort(r.key)} · ${formatTime(r.time)}</p>
-              <p class="text-[11px] font-medium ${c.text}">${formatRemaining(r.key, r.time)}</p>
+              <p class="text-[11px] text-zinc-500">${formatShort(r.key)}</p>
+              <p class="text-[11px] font-medium ${c.text}">${formatRemaining(r.key)}</p>
             </div>
           </div>
         `;
@@ -982,7 +967,6 @@
       modalDate.textContent = `${formatDateES(selectedYear, monthIndex, day)} de ${selectedYear}`;
       renderPickers();
       renderRemindersList();
-      setDefaultReminderTime();
       
       setFormEnabled(Boolean(currentUser));
       modal.classList.remove('hidden');
@@ -999,7 +983,6 @@
       otherDescription.value = '';
       academicFields.classList.add('hidden');
       otherFields.classList.add('hidden');
-      reminderTime.value = '';
     }
 
     function renderRemindersList() {
@@ -1031,8 +1014,7 @@
             </div>
             ${r.description ? `<p class="mt-1 text-xs text-zinc-400 leading-relaxed">${escapeHTML(r.description)}</p>` : ''}
             <div class="flex flex-wrap gap-x-2 mt-1">
-              <span class="text-[11px] font-semibold ${c.text}">${formatTime(r.time)}</span>
-              <span class="text-[11px] font-medium ${isReminderExpired(selectedDate, r.time) ? 'text-rose-400' : 'text-zinc-500'}">${formatRemaining(selectedDate, r.time)}</span>
+              <span class="text-[11px] font-medium ${isReminderExpired(selectedDate) ? 'text-rose-400' : c.text}">${formatRemaining(selectedDate)}</span>
             </div>
           </div>
           <button class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all mt-0.5" data-idx="${idx}">
@@ -1050,10 +1032,9 @@
       const isOther = type === 'Otro';
       const title = (isOther ? reminderInput.value : subjectInput.value).trim();
       const description = (isOther ? otherDescription.value : academicDescription.value).trim();
-      const time = reminderTime.value;
 
-      if (!type || !title || !description || !selectedDate || !time) {
-        alert('Completá el tipo, el título o materia, la descripción y el horario.');
+      if (!type || !title || !selectedDate) {
+        alert('Completá el tipo y el título o nombre de la materia.');
         return;
       }
 
@@ -1073,7 +1054,6 @@
           title: isOther ? title : '',
           description,
           date: selectedDate,
-          time,
           color: selectedColor,
           icon: selectedIcon,
           createdAt: serverTimestamp()
@@ -1085,8 +1065,7 @@
         otherDescription.value = '';
         academicFields.classList.add('hidden');
         otherFields.classList.add('hidden');
-        setDefaultReminderTime();
-        reminderType.focus();
+          reminderType.focus();
       } catch (error) {
         console.error('Error guardando el recordatorio:', error);
         alert('No se pudo guardar el recordatorio. Revisá las reglas de Firestore.');
