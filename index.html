@@ -21,14 +21,14 @@
             }
           },
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
+            sans: ['Poppins', 'system-ui', 'sans-serif'],
           }
         }
       }
     }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { -webkit-font-smoothing: antialiased; }
     
@@ -145,28 +145,55 @@
     body.light-theme ::-webkit-scrollbar-thumb { background: #d4d4d8; }
 
 
-    /* ===== IDENTIDAD UADE WEEK ===== */
+    /* ===== IDENTIDAD UADE WEEK · SOBRIA + GLOW ===== */
     body {
       background-image:
-        radial-gradient(circle at 12% 8%, rgba(56, 189, 248, .10), transparent 28%),
-        radial-gradient(circle at 88% 10%, rgba(167, 139, 250, .11), transparent 30%),
-        radial-gradient(circle at 50% 100%, rgba(52, 211, 153, .07), transparent 35%);
+        radial-gradient(circle at 18% 0%, rgba(255,255,255,.035), transparent 28%),
+        radial-gradient(circle at 82% 8%, rgba(161,161,170,.04), transparent 30%);
       background-attachment: fixed;
     }
+
     .app-shell { position: relative; isolation: isolate; }
+
+    .app-shell::before,
+    .app-shell::after {
+      content: '';
+      position: fixed;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      filter: blur(95px);
+      opacity: .13;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .app-shell::before {
+      top: 4%;
+      left: -90px;
+      background: #a1a1aa;
+    }
+
+    .app-shell::after {
+      right: -100px;
+      bottom: 8%;
+      background: #71717a;
+    }
+
     .brand-credit {
       width: fit-content;
-      color: #67e8f9;
-      text-shadow: 0 0 22px rgba(34, 211, 238, .24);
+      color: #a1a1aa;
+      text-shadow: 0 0 16px rgba(255,255,255,.15);
     }
+
     .brand-title {
       width: fit-content;
-      color: transparent;
-      background: linear-gradient(90deg, #ffffff 0%, #7dd3fc 38%, #c4b5fd 72%, #f9a8d4 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      filter: drop-shadow(0 7px 22px rgba(56, 189, 248, .13));
+      color: #fafafa;
+      text-shadow:
+        0 0 12px rgba(255,255,255,.12),
+        0 0 32px rgba(255,255,255,.06);
     }
+
     .google-login-btn {
       min-height: 42px;
       display: inline-flex;
@@ -175,21 +202,31 @@
       gap: 10px;
       padding: 7px 13px 7px 7px;
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.13);
       color: #f4f4f5;
-      background: linear-gradient(135deg, rgba(39,39,42,.96), rgba(24,24,27,.98));
-      box-shadow: 0 10px 30px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05);
+      background: rgba(24,24,27,.92);
+      box-shadow:
+        0 10px 28px rgba(0,0,0,.24),
+        0 0 0 1px rgba(255,255,255,.02) inset,
+        0 0 22px rgba(255,255,255,.025);
+      backdrop-filter: blur(12px);
       font-size: 13px;
       font-weight: 600;
-      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
     }
+
     .google-login-btn:hover {
       transform: translateY(-1px);
-      border-color: rgba(125,211,252,.45);
-      box-shadow: 0 12px 32px rgba(14,165,233,.13), inset 0 1px 0 rgba(255,255,255,.08);
+      background: rgba(39,39,42,.96);
+      border-color: rgba(255,255,255,.24);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,.28),
+        0 0 24px rgba(255,255,255,.055);
     }
+
     .google-login-btn:active { transform: translateY(0); }
     .google-login-btn:disabled { opacity: .6; cursor: wait; transform: none; }
+
     .google-icon-wrap {
       width: 30px;
       height: 30px;
@@ -198,40 +235,78 @@
       justify-content: center;
       border-radius: 9px;
       background: #fff;
-      box-shadow: 0 2px 10px rgba(0,0,0,.18);
+      box-shadow: 0 3px 12px rgba(0,0,0,.28), 0 0 16px rgba(255,255,255,.12);
       flex-shrink: 0;
     }
-    #syncStatus {
-      background-image: linear-gradient(90deg, rgba(56,189,248,.055), rgba(167,139,250,.04), rgba(52,211,153,.04));
+
+    #syncStatus,
+    .bg-surface-900.border,
+    .modal-content,
+    .profile-drawer {
+      box-shadow:
+        0 18px 55px rgba(0,0,0,.16),
+        0 0 0 1px rgba(255,255,255,.018) inset,
+        0 0 32px rgba(255,255,255,.018);
     }
-    #prevBtn:hover { color: #7dd3fc; border-color: rgba(56,189,248,.5); }
-    #nextBtn:hover { color: #c4b5fd; border-color: rgba(167,139,250,.5); }
-    #themeBtn:hover { color: #f9a8d4; border-color: rgba(244,114,182,.4); }
-    #calendarGrid { background-image: linear-gradient(135deg, rgba(56,189,248,.015), rgba(167,139,250,.018)); }
-    #upcomingList .group:nth-child(4n+1) { border-left-color: rgba(56,189,248,.4); }
-    #upcomingList .group:nth-child(4n+2) { border-left-color: rgba(167,139,250,.4); }
-    #upcomingList .group:nth-child(4n+3) { border-left-color: rgba(52,211,153,.4); }
-    #upcomingList .group:nth-child(4n) { border-left-color: rgba(244,114,182,.4); }
+
+    #prevBtn,
+    #nextBtn,
+    #themeBtn,
+    #userInfo {
+      box-shadow: 0 8px 22px rgba(0,0,0,.16), 0 0 14px rgba(255,255,255,.018);
+    }
+
+    #prevBtn:hover,
+    #nextBtn:hover,
+    #themeBtn:hover,
+    #userInfo:hover {
+      border-color: rgba(255,255,255,.2);
+      box-shadow: 0 10px 28px rgba(0,0,0,.22), 0 0 22px rgba(255,255,255,.045);
+    }
+
+    .day-cell.today {
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 0 22px rgba(255,255,255,.035);
+    }
+
+    .calendar-reminder {
+      box-shadow: 0 5px 14px rgba(0,0,0,.12);
+    }
+
+    .color-dot.selected {
+      box-shadow: 0 0 0 2px #09090b, 0 0 0 4px currentColor, 0 0 18px currentColor;
+    }
 
     body.light-theme {
       background-image:
-        radial-gradient(circle at 12% 8%, rgba(14,165,233,.12), transparent 30%),
-        radial-gradient(circle at 88% 10%, rgba(139,92,246,.10), transparent 32%),
-        radial-gradient(circle at 50% 100%, rgba(16,185,129,.08), transparent 38%) !important;
+        radial-gradient(circle at 18% 0%, rgba(39,39,42,.035), transparent 28%),
+        radial-gradient(circle at 82% 8%, rgba(113,113,122,.04), transparent 30%) !important;
     }
-    body.light-theme .brand-credit { color: #0284c7 !important; }
-    body.light-theme .brand-title {
-      background: linear-gradient(90deg, #0f172a 0%, #0284c7 38%, #7c3aed 72%, #db2777 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
+
+    body.light-theme .app-shell::before { background: #d4d4d8; opacity: .16; }
+    body.light-theme .app-shell::after { background: #a1a1aa; opacity: .12; }
+    body.light-theme .brand-credit { color: #71717a !important; text-shadow: none; }
+    body.light-theme .brand-title { color: #18181b !important; text-shadow: 0 8px 28px rgba(24,24,27,.08); }
+
     body.light-theme .google-login-btn {
       color: #27272a;
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.94);
       border-color: #d4d4d8;
-      box-shadow: 0 8px 24px rgba(15,23,42,.08);
+      box-shadow: 0 10px 28px rgba(15,23,42,.08), 0 0 20px rgba(24,24,27,.025);
     }
-    body.light-theme .google-login-btn:hover { border-color: #7dd3fc; box-shadow: 0 10px 28px rgba(14,165,233,.12); }
+
+    body.light-theme .google-login-btn:hover {
+      border-color: #a1a1aa;
+      background: #fff;
+      box-shadow: 0 14px 34px rgba(15,23,42,.11), 0 0 20px rgba(24,24,27,.035);
+    }
+
+    body.light-theme #syncStatus,
+    body.light-theme .bg-surface-900.border,
+    body.light-theme .modal-content,
+    body.light-theme .profile-drawer {
+      box-shadow: 0 18px 50px rgba(15,23,42,.07), 0 0 0 1px rgba(24,24,27,.015) inset;
+    }
+
     @media (max-width: 480px) {
       .google-login-btn { width: 100%; }
       header > div:last-child { width: 100%; }
