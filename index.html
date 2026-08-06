@@ -540,16 +540,21 @@
             </div>
           </div>
 
-          <!-- Input -->
-          <form id="addForm" class="flex gap-2">
+          <!-- Horario + recordatorio -->
+          <form id="addForm" class="grid grid-cols-1 sm:grid-cols-[135px_1fr_auto] gap-2">
+            <label class="relative">
+              <span class="sr-only">Horario</span>
+              <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <input id="reminderTime" type="time" required class="w-full bg-surface-800 border border-surface-600 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
+            </label>
             <input 
               id="reminderInput"
               type="text" 
               placeholder="¿Qué tenés que hacer?" 
-              class="flex-1 bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition"
+              class="w-full bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition"
               autocomplete="off"
             >
-            <button type="submit" class="px-5 py-2.5 bg-white hover:bg-zinc-100 text-surface-950 font-medium text-sm rounded-xl transition-colors flex items-center gap-1.5 shrink-0">
+            <button type="submit" class="px-5 py-2.5 bg-white hover:bg-zinc-100 text-surface-950 font-medium text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 shrink-0">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
               Agregar
             </button>
@@ -657,6 +662,7 @@
     const emptyState = document.getElementById('emptyState');
     const addForm = document.getElementById('addForm');
     const reminderInput = document.getElementById('reminderInput');
+    const reminderTime = document.getElementById('reminderTime');
     const closeModalBtn = document.getElementById('closeModal');
     const modalBackdrop = document.getElementById('modalBackdrop');
     const colorPicker = document.getElementById('colorPicker');
@@ -731,6 +737,7 @@
 
     function setFormEnabled(enabled) {
       reminderInput.disabled = !enabled;
+      reminderTime.disabled = !enabled;
       submitBtn.disabled = !enabled;
       reminderInput.placeholder = enabled
         ? '¿Qué tenés que hacer?'
@@ -743,6 +750,41 @@
       return String(value).replace(/[&<>'"]/g, char => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
       })[char]);
+    }
+
+    function getReminderDateTime(key, time = '') {
+      const [year, month, day] = key.split('-').map(Number);
+      const [hours, minutes] = /^\d{2}:\d{2}$/.test(time) ? time.split(':').map(Number) : [23, 59];
+      return new Date(year, month - 1, day, hours, minutes, 0, 0);
+    }
+
+    function formatTime(time) {
+      return /^\d{2}:\d{2}$/.test(time || '') ? `${time} hs` : 'Sin horario';
+    }
+
+    function formatRemaining(key, time) {
+      const diff = getReminderDateTime(key, time) - new Date();
+      if (diff < -60000) return 'Finalizado';
+      if (diff <= 60000) return 'Ahora';
+      const totalMinutes = Math.ceil(diff / 60000);
+      const days = Math.floor(totalMinutes / 1440);
+      const hours = Math.floor((totalMinutes % 1440) / 60);
+      const minutes = totalMinutes % 60;
+      if (days > 30) {
+        const months = Math.floor(days / 30);
+        const remainingDays = days % 30;
+        return `Faltan ${months} ${months === 1 ? 'mes' : 'meses'}${remainingDays ? ` y ${remainingDays} d` : ''}`;
+      }
+      if (days > 0) return `Faltan ${days} d${hours ? ` y ${hours} h` : ''}`;
+      if (hours > 0) return `Faltan ${hours} h${minutes ? ` y ${minutes} min` : ''}`;
+      return `Faltan ${minutes} min`;
+    }
+
+    function setDefaultReminderTime() {
+      const now = new Date();
+      now.setMinutes(0, 0, 0);
+      now.setHours(now.getHours() + 1);
+      reminderTime.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
     }
 
     // ==================== RENDER PICKERS ====================
@@ -820,7 +862,7 @@
             item.className = `calendar-reminder ${c.bg} ${c.text}`;
             item.innerHTML = `
               <span class="shrink-0">${ICONS[r.icon] || ICONS.check}</span>
-              <span>${escapeHTML(r.text)}</span>
+              <span class="truncate"><strong class="font-semibold">${escapeHTML(r.time || '--:--')}</strong> · ${escapeHTML(r.text)}</span>
             `;
             preview.appendChild(item);
           });
@@ -858,13 +900,10 @@
 
       const all = [];
       Object.keys(reminders).forEach(key => {
-        const [y, m, d] = key.split('-').map(Number);
-        const date = new Date(y, m - 1, d);
-        if (date >= today) {
-          reminders[key].forEach(r => {
-            all.push({ ...r, key, date });
-          });
-        }
+        reminders[key].forEach(r => {
+          const date = getReminderDateTime(key, r.time);
+          if (date >= new Date(Date.now() - 60000)) all.push({ ...r, key, date });
+        });
       });
 
       all.sort((a, b) => a.date - b.date);
@@ -891,7 +930,10 @@
           </div>
           <div class="min-w-0 flex-1">
             <p class="text-sm text-zinc-200 truncate leading-snug">${escapeHTML(r.text)}</p>
-            <p class="text-[11px] text-zinc-500 mt-0.5">${formatShort(r.key)}</p>
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
+              <p class="text-[11px] text-zinc-500">${formatShort(r.key)} · ${formatTime(r.time)}</p>
+              <p class="text-[11px] font-medium ${getReminderDateTime(r.key, r.time) < new Date() ? 'text-zinc-500' : 'text-sky-400'}">${formatRemaining(r.key, r.time)}</p>
+            </div>
           </div>
         `;
         
@@ -916,6 +958,7 @@
       modalDate.textContent = `${formatDateES(selectedYear, monthIndex, day)} de ${selectedYear}`;
       renderPickers();
       renderRemindersList();
+      setDefaultReminderTime();
       
       setFormEnabled(Boolean(currentUser));
       modal.classList.remove('hidden');
@@ -926,6 +969,7 @@
       modal.classList.add('hidden');
       selectedDate = null;
       reminderInput.value = '';
+      reminderTime.value = '';
     }
 
     function renderRemindersList() {
@@ -950,7 +994,13 @@
           <div class="w-8 h-8 rounded-lg bg-surface-900/40 ${c.text} flex items-center justify-center shrink-0">
             ${ICONS[r.icon] || ICONS.check}
           </div>
-          <p class="flex-1 text-sm text-zinc-100 leading-snug pt-1.5">${escapeHTML(r.text)}</p>
+          <div class="flex-1 min-w-0 pt-0.5">
+            <p class="text-sm text-zinc-100 leading-snug">${escapeHTML(r.text)}</p>
+            <div class="flex flex-wrap gap-x-2 mt-1">
+              <span class="text-[11px] font-semibold ${c.text}">${formatTime(r.time)}</span>
+              <span class="text-[11px] text-zinc-500">${formatRemaining(selectedDate, r.time)}</span>
+            </div>
+          </div>
           <button class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all mt-0.5" data-idx="${idx}">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
@@ -963,7 +1013,8 @@
 
     async function addReminder(text) {
       const cleanText = text.trim();
-      if (!cleanText || !selectedDate) return;
+      const time = reminderTime.value;
+      if (!cleanText || !selectedDate || !time) return;
 
       if (!currentUser) {
         alert('Primero tenés que iniciar sesión con Google.');
@@ -975,11 +1026,13 @@
         await addDoc(collection(db, 'users', currentUser.uid, 'reminders'), {
           text: cleanText,
           date: selectedDate,
+          time,
           color: selectedColor,
           icon: selectedIcon,
           createdAt: serverTimestamp()
         });
         reminderInput.value = '';
+        setDefaultReminderTime();
         reminderInput.focus();
       } catch (error) {
         console.error('Error guardando el recordatorio:', error);
@@ -1020,6 +1073,7 @@
         batch.set(newRef, {
           text: String(reminder.text || '').trim(),
           date: reminder.date,
+          time: reminder.time || '',
           color: reminder.color || 'sky',
           icon: reminder.icon || 'check',
           createdAt: serverTimestamp()
@@ -1048,11 +1102,13 @@
           reminders[data.date].push({
             id: documentSnapshot.id,
             text: data.text || '',
+            time: data.time || '',
             color: data.color || 'sky',
             icon: data.icon || 'check'
           });
         });
 
+        Object.values(reminders).forEach(list => list.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99')));
         renderCalendar();
         if (selectedDate) renderRemindersList();
         setSyncStatus('Sincronizado en tiempo real.', 'online');
@@ -1317,6 +1373,7 @@
         document.body.classList.remove('no-scroll');
         setFormEnabled(false);
         setSyncStatus('Iniciá sesión para sincronizar tus recordatorios.', 'idle');
+        Object.values(reminders).forEach(list => list.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99')));
         renderCalendar();
         if (selectedDate) renderRemindersList();
       }
