@@ -540,23 +540,39 @@
             </div>
           </div>
 
-          <!-- Horario + recordatorio -->
-          <form id="addForm" class="grid grid-cols-1 sm:grid-cols-[135px_1fr_auto] gap-2">
-            <label class="relative">
-              <span class="sr-only">Horario</span>
-              <input id="reminderTime" type="time" required class="w-full bg-surface-800 border border-surface-600 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
-            </label>
-            <input 
-              id="reminderInput"
-              type="text" 
-              placeholder="¿Qué tenés que hacer?" 
-              class="w-full bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition"
-              autocomplete="off"
-            >
-            <button type="submit" class="px-5 py-2.5 bg-white hover:bg-zinc-100 text-surface-950 font-medium text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 shrink-0">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-              Agregar
-            </button>
+          <!-- Datos del recordatorio -->
+          <form id="addForm" class="space-y-3">
+            <div>
+              <label for="reminderType" class="block text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-2">Tipo</label>
+              <select id="reminderType" required class="w-full bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
+                <option value="" disabled selected>Seleccioná un tipo</option>
+                <option value="Trabajo">Trabajo</option>
+                <option value="Parcial">Parcial</option>
+                <option value="Final">Final</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+
+            <div id="academicFields" class="hidden space-y-3">
+              <input id="subjectInput" type="text" maxlength="100" placeholder="Nombre de la materia" class="w-full bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition" autocomplete="off">
+              <textarea id="academicDescription" rows="3" maxlength="500" placeholder="Descripción" class="w-full resize-none bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition"></textarea>
+            </div>
+
+            <div id="otherFields" class="hidden space-y-3">
+              <input id="reminderInput" type="text" maxlength="120" placeholder="Título" class="w-full bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition" autocomplete="off">
+              <textarea id="otherDescription" rows="3" maxlength="500" placeholder="Descripción" class="w-full resize-none bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-[135px_1fr] gap-2">
+              <label class="relative">
+                <span class="sr-only">Horario</span>
+                <input id="reminderTime" type="time" required class="w-full bg-surface-800 border border-surface-600 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
+              </label>
+              <button type="submit" class="px-5 py-2.5 bg-white hover:bg-zinc-100 text-surface-950 font-medium text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5 shrink-0">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Agregar recordatorio
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -611,17 +627,11 @@
     ];
 
     const COLORS = [
-      { id: 'sky',     hex: '#38bdf8', bg: 'bg-sky-500/15',    text: 'text-sky-400',    border: 'border-sky-500/30' },
-      { id: 'emerald', hex: '#34d399', bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30' },
-      { id: 'amber',   hex: '#fbbf24', bg: 'bg-amber-500/15',  text: 'text-amber-400',  border: 'border-amber-500/30' },
-      { id: 'rose',    hex: '#fb7185', bg: 'bg-rose-500/15',   text: 'text-rose-400',   border: 'border-rose-500/30' },
-      { id: 'violet',  hex: '#a78bfa', bg: 'bg-violet-500/15', text: 'text-violet-400', border: 'border-violet-500/30' },
-      { id: 'orange',  hex: '#fb923c', bg: 'bg-orange-500/15', text: 'text-orange-400', border: 'border-orange-500/30' },
-      { id: 'cyan',    hex: '#22d3ee', bg: 'bg-cyan-500/15',   text: 'text-cyan-400',   border: 'border-cyan-500/30' },
-      { id: 'pink',    hex: '#f472b6', bg: 'bg-pink-500/15',   text: 'text-pink-400',   border: 'border-pink-500/30' },
-      { id: 'gray',    hex: '#71717a', bg: 'bg-zinc-500/15',   text: 'text-zinc-300',   border: 'border-zinc-500/30' },
-      { id: 'black',   hex: '#09090b', bg: 'bg-black/35',      text: 'text-zinc-300',   border: 'border-zinc-700' },
-      { id: 'red',     hex: '#ef4444', bg: 'bg-red-500/15',      text: 'text-red-400',   border: 'border-red-500/30' },
+      { id: 'sky',     name: 'Azul',    hex: '#38bdf8', bg: 'bg-sky-500/15',     text: 'text-sky-400',     border: 'border-sky-500/30' },
+      { id: 'emerald', name: 'Verde',   hex: '#34d399', bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30' },
+      { id: 'red',     name: 'Rojo',    hex: '#ef4444', bg: 'bg-red-500/15',     text: 'text-red-400',     border: 'border-red-500/30' },
+      { id: 'orange',  name: 'Naranja', hex: '#fb923c', bg: 'bg-orange-500/15',  text: 'text-orange-400',  border: 'border-orange-500/30' },
+      { id: 'gray',    name: 'Gris',    hex: '#71717a', bg: 'bg-zinc-500/15',    text: 'text-zinc-300',    border: 'border-zinc-500/30' },
     ];
 
     const ICONS = {
@@ -664,6 +674,12 @@
     const emptyState = document.getElementById('emptyState');
     const addForm = document.getElementById('addForm');
     const reminderInput = document.getElementById('reminderInput');
+    const reminderType = document.getElementById('reminderType');
+    const academicFields = document.getElementById('academicFields');
+    const otherFields = document.getElementById('otherFields');
+    const subjectInput = document.getElementById('subjectInput');
+    const academicDescription = document.getElementById('academicDescription');
+    const otherDescription = document.getElementById('otherDescription');
     const reminderTime = document.getElementById('reminderTime');
     const closeModalBtn = document.getElementById('closeModal');
     const modalBackdrop = document.getElementById('modalBackdrop');
@@ -738,12 +754,9 @@
     }
 
     function setFormEnabled(enabled) {
-      reminderInput.disabled = !enabled;
-      reminderTime.disabled = !enabled;
+      [reminderInput, reminderType, subjectInput, academicDescription, otherDescription, reminderTime].forEach(el => el.disabled = !enabled);
       submitBtn.disabled = !enabled;
-      reminderInput.placeholder = enabled
-        ? '¿Qué tenés que hacer?'
-        : 'Iniciá sesión para crear recordatorios';
+      reminderInput.placeholder = enabled ? 'Título' : 'Iniciá sesión para crear recordatorios';
       addForm.classList.toggle('opacity-50', !enabled);
       submitBtn.classList.toggle('cursor-not-allowed', !enabled);
     }
@@ -807,7 +820,7 @@
         btn.className = `color-dot w-7 h-7 rounded-full border-2 border-transparent ${selectedColor === c.id ? 'selected' : ''}`;
         btn.style.backgroundColor = c.hex;
         btn.style.color = c.hex;
-        btn.title = c.id;
+        btn.title = c.name;
         btn.addEventListener('click', () => {
           selectedColor = c.id;
           renderPickers();
@@ -940,10 +953,10 @@
             ${ICONS[r.icon] || ICONS.check}
           </div>
           <div class="min-w-0 flex-1">
-            <p class="text-sm text-zinc-200 truncate leading-snug">${escapeHTML(r.text)}</p>
+            <p class="text-sm font-semibold ${c.text} truncate leading-snug">${escapeHTML(r.text)}</p>
             <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
               <p class="text-[11px] text-zinc-500">${formatShort(r.key)} · ${formatTime(r.time)}</p>
-              <p class="text-[11px] font-medium ${r.expired ? 'text-rose-400' : 'text-sky-400'}">${formatRemaining(r.key, r.time)}</p>
+              <p class="text-[11px] font-medium ${c.text}">${formatRemaining(r.key, r.time)}</p>
             </div>
           </div>
         `;
@@ -973,13 +986,19 @@
       
       setFormEnabled(Boolean(currentUser));
       modal.classList.remove('hidden');
-      if (currentUser) setTimeout(() => reminderInput.focus(), 50);
+      if (currentUser) setTimeout(() => reminderType.focus(), 50);
     }
 
     function closeModal() {
       modal.classList.add('hidden');
       selectedDate = null;
+      reminderType.value = '';
       reminderInput.value = '';
+      subjectInput.value = '';
+      academicDescription.value = '';
+      otherDescription.value = '';
+      academicFields.classList.add('hidden');
+      otherFields.classList.add('hidden');
       reminderTime.value = '';
     }
 
@@ -1006,7 +1025,11 @@
             ${ICONS[r.icon] || ICONS.check}
           </div>
           <div class="flex-1 min-w-0 pt-0.5">
-            <p class="text-sm text-zinc-100 leading-snug">${escapeHTML(r.text)}</p>
+            <div class="flex flex-wrap items-center gap-2">
+              <p class="text-sm font-semibold ${c.text} leading-snug">${escapeHTML(r.text)}</p>
+              ${r.type ? `<span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-surface-900/40 ${c.text}">${escapeHTML(r.type)}</span>` : ''}
+            </div>
+            ${r.description ? `<p class="mt-1 text-xs text-zinc-400 leading-relaxed">${escapeHTML(r.description)}</p>` : ''}
             <div class="flex flex-wrap gap-x-2 mt-1">
               <span class="text-[11px] font-semibold ${c.text}">${formatTime(r.time)}</span>
               <span class="text-[11px] font-medium ${isReminderExpired(selectedDate, r.time) ? 'text-rose-400' : 'text-zinc-500'}">${formatRemaining(selectedDate, r.time)}</span>
@@ -1022,29 +1045,48 @@
       });
     }
 
-    async function addReminder(text) {
-      const cleanText = text.trim();
+    async function addReminder() {
+      const type = reminderType.value;
+      const isOther = type === 'Otro';
+      const title = (isOther ? reminderInput.value : subjectInput.value).trim();
+      const description = (isOther ? otherDescription.value : academicDescription.value).trim();
       const time = reminderTime.value;
-      if (!cleanText || !selectedDate || !time) return;
+
+      if (!type || !title || !description || !selectedDate || !time) {
+        alert('Completá el tipo, el título o materia, la descripción y el horario.');
+        return;
+      }
 
       if (!currentUser) {
         alert('Primero tenés que iniciar sesión con Google.');
         return;
       }
 
+      const displayTitle = isOther ? title : `${type}: ${title}`;
+
       try {
         submitBtn.disabled = true;
         await addDoc(collection(db, 'users', currentUser.uid, 'reminders'), {
-          text: cleanText,
+          text: displayTitle,
+          type,
+          subject: isOther ? '' : title,
+          title: isOther ? title : '',
+          description,
           date: selectedDate,
           time,
           color: selectedColor,
           icon: selectedIcon,
           createdAt: serverTimestamp()
         });
+        reminderType.value = '';
         reminderInput.value = '';
+        subjectInput.value = '';
+        academicDescription.value = '';
+        otherDescription.value = '';
+        academicFields.classList.add('hidden');
+        otherFields.classList.add('hidden');
         setDefaultReminderTime();
-        reminderInput.focus();
+        reminderType.focus();
       } catch (error) {
         console.error('Error guardando el recordatorio:', error);
         alert('No se pudo guardar el recordatorio. Revisá las reglas de Firestore.');
@@ -1345,9 +1387,21 @@
     closeModalBtn.addEventListener('click', closeModal);
     modalBackdrop.addEventListener('click', closeModal);
 
+    reminderType.addEventListener('change', () => {
+      const isOther = reminderType.value === 'Otro';
+      const isAcademic = ['Trabajo', 'Parcial', 'Final'].includes(reminderType.value);
+      academicFields.classList.toggle('hidden', !isAcademic);
+      otherFields.classList.toggle('hidden', !isOther);
+      subjectInput.required = isAcademic;
+      academicDescription.required = isAcademic;
+      reminderInput.required = isOther;
+      otherDescription.required = isOther;
+      setTimeout(() => (isOther ? reminderInput : subjectInput).focus(), 30);
+    });
+
     addForm.addEventListener('submit', e => {
       e.preventDefault();
-      addReminder(reminderInput.value);
+      addReminder();
     });
 
     document.addEventListener('keydown', e => {
