@@ -343,6 +343,15 @@
           <!-- Days -->
           <div id="calendarGrid" class="grid grid-cols-7"></div>
         </div>
+
+        <!-- Month reminders grid (solo si hay recordatorios en el mes) -->
+        <div id="monthRemindersSection" class="mt-5 hidden">
+          <div class="flex items-center justify-between mb-3 pb-3 rule">
+            <h3 class="text-sm font-serif font-semibold text-white">Recordatorios del mes</h3>
+            <span id="monthRemindersCount" class="text-xs text-zinc-500 tabular-nums font-mono"></span>
+          </div>
+          <div id="monthRemindersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -613,6 +622,9 @@
     // ==================== DOM ====================
     const monthTitle = document.getElementById('monthTitle');
     const calendarGrid = document.getElementById('calendarGrid');
+    const monthRemindersSection = document.getElementById('monthRemindersSection');
+    const monthRemindersGrid = document.getElementById('monthRemindersGrid');
+    const monthRemindersCount = document.getElementById('monthRemindersCount');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const themeBtn = document.getElementById('themeBtn');
@@ -859,7 +871,78 @@
         calendarGrid.appendChild(cell);
       }
 
+      renderMonthReminders();
       renderUpcoming();
+    }
+
+    // ==================== MONTH REMINDERS GRID ====================
+    function renderMonthReminders() {
+      if (!monthRemindersSection || !monthRemindersGrid) return;
+
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const monthItems = [];
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const key = dateKey(currentYear, currentMonth, day);
+        const list = reminders[key] || [];
+        if (list.length === 0) continue;
+        monthItems.push({ key, day, list });
+      }
+
+      if (monthItems.length === 0) {
+        monthRemindersSection.classList.add('hidden');
+        monthRemindersGrid.innerHTML = '';
+        if (monthRemindersCount) monthRemindersCount.textContent = '';
+        return;
+      }
+
+      monthRemindersSection.classList.remove('hidden');
+      const totalCount = monthItems.reduce((sum, item) => sum + item.list.length, 0);
+      if (monthRemindersCount) {
+        monthRemindersCount.textContent = `${totalCount} recordatorio${totalCount === 1 ? '' : 's'} · ${monthItems.length} día${monthItems.length === 1 ? '' : 's'}`;
+      }
+
+      monthRemindersGrid.innerHTML = '';
+
+      monthItems.forEach(({ key, day, list }) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'text-left border border-surface-700 bg-surface-900 p-3 sm:p-4 hover:border-surface-500 hover:bg-surface-850 transition-colors focus:outline-none focus:border-surface-500';
+        card.addEventListener('click', () => openModal(key, day, currentMonth));
+
+        const header = document.createElement('div');
+        header.className = 'flex items-center justify-between gap-2 mb-2.5 pb-2 border-b border-surface-800';
+        const today = isToday(currentYear, currentMonth, day);
+        header.innerHTML = `
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="day-number text-sm font-medium ${today ? 'text-zinc-100' : 'text-zinc-300'}" style="${today ? 'background:#c7924a;color:#14140f;font-weight:700' : ''}">${day}</span>
+            <span class="text-xs text-zinc-500 truncate">${formatDateES(currentYear, currentMonth, day)}</span>
+          </div>
+          <span class="text-[10px] uppercase tracking-wider text-zinc-500 shrink-0">${list.length} item${list.length === 1 ? '' : 's'}</span>
+        `;
+        card.appendChild(header);
+
+        const listEl = document.createElement('div');
+        listEl.className = 'space-y-1.5';
+
+        list.forEach(r => {
+          const c = getColor(r.color);
+          const row = document.createElement('div');
+          row.className = `flex items-start gap-2 ${c.text}`;
+          row.innerHTML = `
+            <span class="shrink-0 mt-0.5">${ICONS[r.icon] || ICONS.check}</span>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium leading-snug truncate">${escapeHTML(r.text)}</p>
+              ${r.type ? `<p class="text-[10px] uppercase tracking-wider opacity-70 mt-0.5">${escapeHTML(r.type)}</p>` : ''}
+              ${r.description ? `<p class="text-xs text-zinc-500 mt-0.5 line-clamp-2">${escapeHTML(r.description)}</p>` : ''}
+            </div>
+          `;
+          listEl.appendChild(row);
+        });
+
+        card.appendChild(listEl);
+        monthRemindersGrid.appendChild(card);
+      });
     }
 
     // ==================== UPCOMING ====================
