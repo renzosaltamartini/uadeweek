@@ -1372,9 +1372,9 @@
       academicFields.classList.toggle('hidden', !isAcademic);
       otherFields.classList.toggle('hidden', !isOther);
       subjectInput.required = isAcademic;
-      academicDescription.required = isAcademic;
+      academicDescription.required = false;
       reminderInput.required = isOther;
-      otherDescription.required = isOther;
+      otherDescription.required = false;
       setTimeout(() => (isOther ? reminderInput : subjectInput).focus(), 30);
     });
 
