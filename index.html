@@ -871,7 +871,7 @@
             item.className = `calendar-reminder ${c.bg} ${c.text}`;
             item.innerHTML = `
               <span class="shrink-0">${ICONS[r.icon] || ICONS.check}</span>
-              <span class="truncate"><strong class="font-semibold">${escapeHTML(r.time || '--:--')}</strong> · ${escapeHTML(r.text)}</span>
+              <span class="truncate"> · ${escapeHTML(r.text)}</span>
             `;
             preview.appendChild(item);
           });
