@@ -11,88 +11,64 @@
         extend: {
           colors: {
             surface: {
-              950: '#07070a',
-              900: '#0e0e12',
-              850: '#141418',
-              800: '#1a1a20',
-              700: '#25252e',
-              600: '#34343f',
-              500: '#4a4a58',
+              950: '#0c0c0a',
+              900: '#141410',
+              850: '#191914',
+              800: '#201f18',
+              700: '#2b2a1f',
+              600: '#3c3a2b',
+              500: '#57553d',
             }
           },
           fontFamily: {
-            sans: ['"Manrope"', 'system-ui', 'sans-serif'],
-            display: ['"Outfit"', 'system-ui', 'sans-serif'],
-            serif: ['"Outfit"', 'system-ui', 'sans-serif'],
+            sans: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+            serif: ['"Fraunces"', 'Georgia', 'serif'],
           }
         }
       }
     }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { -webkit-font-smoothing: antialiased; }
 
-    body {
-      letter-spacing: 0.01em;
-      font-family: 'Manrope', system-ui, sans-serif;
-    }
-    h1, h2, h3, .brand-title, .font-serif, .font-display {
-      font-family: 'Outfit', system-ui, sans-serif;
-      letter-spacing: -0.02em;
-    }
+    body { letter-spacing: 0.005em; }
+    h1, h2, h3, .brand-title, .font-serif { font-family: 'Fraunces', Georgia, serif; letter-spacing: -0.01em; }
 
-    /* ===== GLASS DARK ===== */
+    /* ===== IDENTIDAD "CUADERNO" — papel + tinta, sin glow ===== */
     body {
-      background-color: #07070a;
+      background-color: #0c0c0a;
       background-image:
-        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(199,146,74,.18), transparent 50%),
-        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(99,102,241,.12), transparent 45%),
-        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(56,189,248,.08), transparent 40%);
+        linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+      background-size: 34px 34px;
       background-attachment: fixed;
     }
 
     .app-shell { position: relative; isolation: isolate; }
-
-    .glass {
-      background: rgba(18, 18, 24, 0.55);
-      backdrop-filter: blur(20px) saturate(1.4);
-      -webkit-backdrop-filter: blur(20px) saturate(1.4);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow:
-        0 4px 24px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    }
-
-    .glass-soft {
-      background: rgba(22, 22, 30, 0.4);
-      backdrop-filter: blur(12px) saturate(1.2);
-      -webkit-backdrop-filter: blur(12px) saturate(1.2);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
+    .app-shell::before, .app-shell::after { content: none; }
 
     .brand-credit {
       width: fit-content;
-      color: #8a8698;
+      color: #6f6d58;
     }
 
     .brand-title {
       width: fit-content;
-      color: #f5f4f8;
+      color: #f3f1e7;
     }
 
     .rule {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid #2b2a1f;
     }
 
     .day-cell {
       min-height: 116px;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-      border-color: rgba(255, 255, 255, 0.05) !important;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
     }
     .day-cell:hover:not(.empty) {
-      background-color: rgba(255, 255, 255, 0.04);
+      background-color: #17170f;
     }
     .day-cell.today {
       background: transparent;
@@ -103,13 +79,12 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 8px;
-      font-family: 'Outfit', system-ui, sans-serif;
-      font-weight: 600;
+      border-radius: 0;
+      font-family: 'IBM Plex Mono', monospace;
     }
     .day-cell.today .day-number {
       background: #c7924a;
-      color: #0e0e12;
+      color: #14140f;
       font-weight: 700;
     }
     .calendar-reminder {
@@ -118,7 +93,7 @@
       align-items: center;
       gap: 6px;
       padding: 3px 0 3px 8px;
-      border-radius: 6px;
+      border-radius: 0;
       border-left: 2px solid currentColor;
       background: transparent !important;
       font-size: 11px;
@@ -139,21 +114,21 @@
     }
 
     .color-dot {
-      border-radius: 8px !important;
+      border-radius: 3px !important;
       transition: transform 0.15s ease;
     }
     .color-dot.selected {
-      transform: scale(1.12);
-      box-shadow: 0 0 0 2px #0e0e12, 0 0 0 4px currentColor;
+      transform: scale(1.1);
+      box-shadow: 0 0 0 2px #0c0c0a, 0 0 0 4px currentColor;
     }
 
     .icon-btn {
-      border-radius: 8px !important;
+      border-radius: 3px !important;
       transition: all 0.12s ease;
     }
     .icon-btn.selected {
       background-color: #c7924a !important;
-      color: #0e0e12 !important;
+      color: #14140f !important;
     }
 
     .modal-overlay { animation: fadeIn 0.18s ease-out; }
@@ -174,65 +149,34 @@
 
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #3c3a2b; border-radius: 10px; }
 
-    /* ===== GLASS LIGHT ===== */
-    body, body * { transition-property: background-color, border-color, color, box-shadow; transition-duration: 0.2s; }
-
-    body.light-theme {
-      background-color: #eef0f5 !important;
-      color: #1c1c24 !important;
-      background-image:
-        radial-gradient(ellipse 80% 50% at 15% -10%, rgba(199,146,74,.2), transparent 50%),
-        radial-gradient(ellipse 60% 40% at 95% 5%, rgba(99,102,241,.12), transparent 45%),
-        radial-gradient(ellipse 50% 30% at 40% 100%, rgba(56,189,248,.1), transparent 40%) !important;
-    }
-
-    body.light-theme .glass {
-      background: rgba(255, 255, 255, 0.62);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      box-shadow:
-        0 4px 24px rgba(30, 30, 50, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    }
-
-    body.light-theme .glass-soft {
-      background: rgba(255, 255, 255, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.55);
-    }
-
-    body.light-theme .bg-surface-950 { background-color: transparent !important; }
-    body.light-theme .bg-surface-900 { background-color: rgba(255,255,255,.55) !important; }
-    body.light-theme .bg-surface-850 { background-color: rgba(255,255,255,.4) !important; }
-    body.light-theme .bg-surface-800 { background-color: rgba(255,255,255,.5) !important; }
-    body.light-theme .bg-surface-700 { background-color: rgba(240,242,248,.7) !important; }
-    body.light-theme .border-surface-800\/60,
-    body.light-theme .border-surface-800 { border-color: rgba(0,0,0,.06) !important; }
-    body.light-theme .border-surface-700,
-    body.light-theme .border-surface-600 { border-color: rgba(0,0,0,.1) !important; }
-    body.light-theme .text-white,
-    body.light-theme .text-zinc-100,
-    body.light-theme .text-zinc-200,
-    body.light-theme .text-zinc-300 { color: #1a1a24 !important; }
-    body.light-theme .text-zinc-400 { color: #4a4a5c !important; }
-    body.light-theme .text-zinc-500,
-    body.light-theme .text-zinc-600 { color: #6b6b7c !important; }
-    body.light-theme .hover\:bg-surface-800:hover,
-    body.light-theme .hover\:bg-surface-700:hover { background-color: rgba(0,0,0,.04) !important; }
-    body.light-theme .day-cell { border-color: rgba(0,0,0,.06) !important; }
-    body.light-theme .day-cell:hover:not(.empty) { background-color: rgba(0,0,0,.03); }
+    /* Tema claro — "papel" */
+    body, body * { transition-property: background-color, border-color, color; transition-duration: 0.18s; }
+    body.light-theme { background-color: #f6f3ea !important; color: #3a3826 !important; }
+    body.light-theme::before { content: none; }
+    body.light-theme .bg-surface-950 { background-color: #f6f3ea !important; }
+    body.light-theme .bg-surface-900 { background-color: #fdfcf6 !important; }
+    body.light-theme .bg-surface-850 { background-color: #f6f3ea !important; }
+    body.light-theme .bg-surface-800 { background-color: #efebdd !important; }
+    body.light-theme .bg-surface-700 { background-color: #e5e0cd !important; }
+    body.light-theme .border-surface-800\/60, body.light-theme .border-surface-800 { border-color: #e5e0cd !important; }
+    body.light-theme .border-surface-700, body.light-theme .border-surface-600 { border-color: #ddd7c0 !important; }
+    body.light-theme .text-white, body.light-theme .text-zinc-100, body.light-theme .text-zinc-200, body.light-theme .text-zinc-300 { color: #2c2a1c !important; }
+    body.light-theme .text-zinc-400 { color: #5a5842 !important; }
+    body.light-theme .text-zinc-500, body.light-theme .text-zinc-600 { color: #7a7860 !important; }
+    body.light-theme .hover\:bg-surface-800:hover, body.light-theme .hover\:bg-surface-700:hover { background-color: #ece7d4 !important; }
+    body.light-theme .day-cell:hover:not(.empty) { background-color: #f0ecdd; }
     body.light-theme .day-cell.today { background: transparent; }
-    body.light-theme .day-cell.today .day-number { background: #a8672b; color: #fff !important; }
-    body.light-theme .modal-overlay,
-    body.light-theme .drawer-overlay { background-color: rgba(20,22,30,.35) !important; }
-    body.light-theme input,
-    body.light-theme select { color: #1a1a24 !important; }
-    body.light-theme ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); }
-    body.light-theme .brand-title { color: #12121a; }
-    body.light-theme .brand-credit { color: #7a7a8c; }
-    body.light-theme .rule { border-top-color: rgba(0,0,0,.08); }
-    body.light-theme .color-dot.selected {
-      box-shadow: 0 0 0 2px #fff, 0 0 0 4px currentColor;
+    body.light-theme .day-cell.today .day-number { background: #a8672b; color: #fdfcf6 !important; }
+    body.light-theme .modal-overlay, body.light-theme .drawer-overlay { background-color: rgba(40,38,26,.35) !important; }
+    body.light-theme input, body.light-theme select { color: #2c2a1c !important; }
+    body.light-theme ::-webkit-scrollbar-thumb { background: #ddd7c0; }
+    body.light-theme .brand-title { color: #23220f; }
+    body.light-theme .brand-credit { color: #8a8768; }
+    body.light-theme { background-image:
+        linear-gradient(rgba(40,38,26,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(40,38,26,.04) 1px, transparent 1px) !important;
     }
 
     .google-login-btn {
@@ -241,18 +185,18 @@
       align-items: center;
       justify-content: center;
       gap: 9px;
-      padding: 6px 14px 6px 6px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,.12);
-      color: #f5f4f8;
-      background: rgba(255,255,255,.04);
-      font-family: 'Manrope', system-ui, sans-serif;
+      padding: 6px 12px 6px 6px;
+      border-radius: 3px;
+      border: 1px solid #3c3a2b;
+      color: #f3f1e7;
+      background: transparent;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 12px;
       font-weight: 600;
       letter-spacing: 0.02em;
       transition: border-color .16s ease, background-color .16s ease;
     }
-    .google-login-btn:hover { border-color: #c7924a; background: rgba(199,146,74,.1); }
+    .google-login-btn:hover { border-color: #c7924a; background: rgba(199,146,74,.07); }
     .google-login-btn:active { transform: translateY(0); }
     .google-login-btn:disabled { opacity: .55; cursor: wait; }
 
@@ -262,29 +206,21 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 8px;
+      border-radius: 3px;
       background: #fff;
       flex-shrink: 0;
     }
 
     body.light-theme .google-login-btn {
-      color: #1a1a24;
-      border-color: rgba(0,0,0,.1);
-      background: rgba(255,255,255,.7);
+      color: #2c2a1c;
+      border-color: #ddd7c0;
+      background: #fdfcf6;
     }
-    body.light-theme .google-login-btn:hover {
-      border-color: #a8672b;
-      background: rgba(168,103,43,.08);
-    }
+    body.light-theme .google-login-btn:hover { border-color: #a8672b; background: rgba(168,103,43,.06); }
 
-    #prevBtn, #nextBtn, #themeBtn, #userInfo {
-      border-radius: 10px !important;
-    }
+    #prevBtn, #nextBtn, #themeBtn, #userInfo { border-radius: 3px !important; }
 
-    /* Sidebar: no se estira con el grid de recordatorios del mes */
-    .sidebar-panel {
-      max-height: none;
-    }
+    /* Sidebar: no se estira con contenido extra del mes; sticky en desktop */
     @media (min-width: 1280px) {
       .sidebar-col {
         align-self: start;
@@ -292,14 +228,14 @@
         top: 1.5rem;
       }
       .sidebar-panel {
-        max-height: calc(100vh - 3rem);
         display: flex;
         flex-direction: column;
+        overflow: hidden;
       }
       .sidebar-panel #upcomingList {
-        max-height: none;
         flex: 1 1 auto;
         min-height: 0;
+        overflow-y: auto;
       }
     }
 
@@ -320,10 +256,10 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-start justify-between gap-4">
           <div class="brand-block">
-            <p class="brand-credit text-[10px] sm:text-[11px] font-semibold tracking-[0.3em] uppercase mb-1.5">Hecho por Renzo con ayuda de Claude</p>
-            <h1 id="calendarHeading" class="brand-title text-4xl sm:text-6xl font-display font-semibold tracking-tight">Uade Week</h1>
+            <p class="brand-credit text-[10px] sm:text-[11px] font-semibold tracking-[0.3em] uppercase mb-1.5">Hecho por Renzo — Ed. Académica</p>
+            <h1 id="calendarHeading" class="brand-title text-4xl sm:text-6xl font-serif font-semibold tracking-tight">Uade Week</h1>
           </div>
-          <button id="themeBtn" type="button" class="shrink-0 h-10 w-10 sm:w-auto sm:px-4 glass rounded-xl text-zinc-300 hover:bg-white/10 transition-colors flex items-center justify-center gap-2" aria-label="Cambiar tema">
+          <button id="themeBtn" type="button" class="shrink-0 h-10 w-10 sm:w-auto sm:px-4 border border-surface-600 text-zinc-300 hover:border-surface-500 transition-colors flex items-center justify-center gap-2" aria-label="Cambiar tema">
             <span id="themeIcon" aria-hidden="true"></span>
             <span id="themeText" class="hidden sm:inline text-xs font-medium uppercase tracking-wider"></span>
           </button>
@@ -332,8 +268,8 @@
         <div class="rule flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
           <p class="text-xs sm:text-sm text-zinc-500">Calendario académico para organizar todos tus años</p>
           <div class="flex flex-wrap items-center gap-2">
-            <button id="userInfo" type="button" class="hidden items-center gap-2 glass rounded-xl px-2.5 py-1.5 hover:bg-white/10 transition-colors text-left" aria-label="Abrir perfil">
-              <img id="userPhoto" class="hidden w-8 h-8 rounded-lg object-cover" alt="Foto del usuario">
+            <button id="userInfo" type="button" class="hidden items-center gap-2 border border-surface-700 bg-surface-900 px-2.5 py-1.5 hover:border-surface-500 transition-colors text-left" aria-label="Abrir perfil">
+              <img id="userPhoto" class="hidden w-8 h-8 object-cover" alt="Foto del usuario">
               <div class="min-w-0">
                 <p id="userName" class="max-w-40 truncate text-xs font-medium text-white"></p>
                 <p id="userEmail" class="hidden sm:block max-w-40 truncate text-[10px] text-zinc-500"></p>
@@ -357,24 +293,24 @@
       </div>
     </header>
 
-    <div id="syncStatus" class="mb-5 sm:mb-7 flex items-center gap-2 glass rounded-xl px-3 py-2 text-xs text-zinc-500">
+    <div id="syncStatus" class="mb-5 sm:mb-7 flex items-center gap-2 border border-surface-700 bg-surface-900 px-3 py-2 text-xs text-zinc-500 font-mono">
       <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
       <span id="syncText">Iniciá sesión para conectar con los servidores.</span>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-8">
 
-      <!-- Sidebar: Upcoming (altura limitada al viewport, no se estira con recordatorios del mes) -->
+      <!-- Sidebar: Upcoming — sticky y altura = calendario (no se estira con contenido extra) -->
       <div class="xl:col-span-4 xl:order-1 sidebar-col">
-        <div class="glass sidebar-panel rounded-2xl p-4 sm:p-5">
+        <div class="border border-surface-700 bg-surface-900 p-4 sm:p-5 sidebar-panel">
           <div class="flex items-center justify-between mb-3 pb-3 rule">
-            <h3 class="text-sm font-display font-semibold text-white">Próximos recordatorios</h3>
-            <span id="upcomingCount" class="text-xs text-zinc-500 tabular-nums"></span>
+            <h3 class="text-sm font-serif font-semibold text-white">Próximos recordatorios</h3>
+            <span id="upcomingCount" class="text-xs text-zinc-500 tabular-nums font-mono"></span>
           </div>
 
           <div class="mb-4">
             <label for="upcomingSort" class="block text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Ordenar por</label>
-            <select id="upcomingSort" class="w-full glass-soft rounded-xl border-0 px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/20 transition">
+            <select id="upcomingSort" class="w-full bg-surface-800 border border-surface-600 px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
               <option value="date-asc">Fecha (próximos primero)</option>
               <option value="date-desc">Fecha (más lejanos primero)</option>
               <option value="type">Tipo</option>
@@ -393,47 +329,38 @@
         </div>
       </div>
 
-      <!-- Calendar Column -->
+      <!-- Calendar Column (ahora a la derecha) -->
       <div class="xl:col-span-8 xl:order-2">
 
         <!-- Month Nav -->
         <div class="flex items-center justify-between mb-5">
-          <h2 id="monthTitle" class="text-2xl font-display font-semibold text-white tracking-tight">Agosto 2026</h2>
+          <h2 id="monthTitle" class="text-2xl font-serif font-semibold text-white tracking-tight">Agosto 2026</h2>
 
-          <div class="flex items-center gap-1.5">
-            <button id="prevBtn" class="w-9 h-9 flex items-center justify-center glass-soft rounded-xl hover:bg-white/10 disabled:opacity-25 disabled:cursor-not-allowed transition-colors" aria-label="Anterior">
+          <div class="flex items-center gap-1">
+            <button id="prevBtn" class="w-9 h-9 flex items-center justify-center border border-surface-600 hover:border-surface-500 disabled:opacity-25 disabled:cursor-not-allowed transition-colors" aria-label="Anterior">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
             </button>
-            <button id="nextBtn" class="w-9 h-9 flex items-center justify-center glass-soft rounded-xl hover:bg-white/10 disabled:opacity-25 disabled:cursor-not-allowed transition-colors" aria-label="Siguiente">
+            <button id="nextBtn" class="w-9 h-9 flex items-center justify-center border border-surface-600 hover:border-surface-500 disabled:opacity-25 disabled:cursor-not-allowed transition-colors" aria-label="Siguiente">
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </button>
           </div>
         </div>
 
         <!-- Calendar Card -->
-        <div id="calendarCard" class="glass rounded-2xl overflow-hidden">
+        <div id="calendarCard" class="bg-surface-900 border border-surface-700 overflow-hidden">
           <!-- Weekdays -->
-          <div class="grid grid-cols-7 border-b border-white/5">
-            <div class="py-3 text-center text-[11px] font-medium tracking-wider text-zinc-500 uppercase">Lun</div>
-            <div class="py-3 text-center text-[11px] font-medium tracking-wider text-zinc-500 uppercase">Mar</div>
-            <div class="py-3 text-center text-[11px] font-medium tracking-wider text-zinc-500 uppercase">Mié</div>
-            <div class="py-3 text-center text-[11px] font-medium tracking-wider text-zinc-500 uppercase">Jue</div>
-            <div class="py-3 text-center text-[11px] font-medium tracking-wider text-zinc-500 uppercase">Vie</div>
-            <div class="py-3 text-center text-[11px] font-medium tracking-wider text-zinc-500 uppercase">Sáb</div>
-            <div class="py-3 text-center text-[11px] font-medium tracking-wider text-zinc-500 uppercase">Dom</div>
+          <div class="grid grid-cols-7 border-b border-surface-700">
+            <div class="py-3 text-center text-[11px] font-mono tracking-wider text-zinc-500 uppercase">Lun</div>
+            <div class="py-3 text-center text-[11px] font-mono tracking-wider text-zinc-500 uppercase">Mar</div>
+            <div class="py-3 text-center text-[11px] font-mono tracking-wider text-zinc-500 uppercase">Mié</div>
+            <div class="py-3 text-center text-[11px] font-mono tracking-wider text-zinc-500 uppercase">Jue</div>
+            <div class="py-3 text-center text-[11px] font-mono tracking-wider text-zinc-500 uppercase">Vie</div>
+            <div class="py-3 text-center text-[11px] font-mono tracking-wider text-zinc-500 uppercase">Sáb</div>
+            <div class="py-3 text-center text-[11px] font-mono tracking-wider text-zinc-500 uppercase">Dom</div>
           </div>
 
           <!-- Days -->
           <div id="calendarGrid" class="grid grid-cols-7"></div>
-        </div>
-
-        <!-- Month reminders grid -->
-        <div id="monthRemindersSection" class="mt-5 hidden">
-          <div class="flex items-center justify-between mb-3 pb-3 rule">
-            <h3 class="text-sm font-display font-semibold text-white">Recordatorios del mes</h3>
-            <span id="monthRemindersCount" class="text-xs text-zinc-500 tabular-nums"></span>
-          </div>
-          <div id="monthRemindersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         </div>
       </div>
     </div>
@@ -442,11 +369,11 @@
   <!-- ==================== PROFILE DRAWER ==================== -->
   <div id="profilePanel" class="fixed inset-0 z-[60] hidden">
     <div id="profileBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-[2px] drawer-overlay"></div>
-    <aside id="profileDrawer" class="profile-drawer absolute right-0 top-0 h-full w-full max-w-sm glass border-l border-white/10 shadow-none flex flex-col">
-      <div class="flex items-center justify-between px-5 py-4 border-b border-white/8">
+    <aside id="profileDrawer" class="profile-drawer absolute right-0 top-0 h-full w-full max-w-sm bg-surface-900 border-l border-surface-700 shadow-none flex flex-col">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-surface-700">
         <div>
           <p class="text-xs uppercase tracking-widest text-zinc-500">Cuenta</p>
-          <h2 class="text-lg font-display font-semibold text-white">Detalles del usuario</h2>
+          <h2 class="text-lg font-serif font-semibold text-white">Detalles del usuario</h2>
         </div>
         <button id="closeProfile" class="w-9 h-9 flex items-center justify-center rounded-none hover:bg-surface-800 text-zinc-400 hover:text-white transition-colors" aria-label="Cerrar perfil">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -510,10 +437,10 @@
   <div id="registrationModal" class="fixed inset-0 z-[70] hidden">
     <div class="absolute inset-0 bg-black/75 backdrop-blur-sm"></div>
     <div class="absolute inset-0 flex items-center justify-center p-4">
-      <div class="w-full max-w-md rounded-2xl glass shadow-none overflow-hidden modal-content">
-        <div class="px-6 py-5 border-b border-white/8">
+      <div class="w-full max-w-md rounded-none border border-surface-600 bg-surface-900 shadow-none overflow-hidden modal-content">
+        <div class="px-6 py-5 border-b border-surface-700">
           <p class="text-xs uppercase tracking-widest mb-1" style="color:#c7924a">Primer ingreso</p>
-          <h2 class="text-xl font-display font-semibold text-white">Completá tu registro</h2>
+          <h2 class="text-xl font-serif font-semibold text-white">Completá tu registro</h2>
           <p class="mt-1 text-sm text-zinc-500">Estos datos son obligatorios para continuar.</p>
         </div>
         <form id="registrationForm" class="p-6 space-y-4">
@@ -547,12 +474,12 @@
     <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px] modal-overlay" id="modalBackdrop"></div>
     
     <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
-      <div class="w-full max-w-lg glass rounded-2xl shadow-none modal-content pointer-events-auto overflow-hidden">
+      <div class="w-full max-w-lg bg-surface-900 border border-surface-600 rounded-none shadow-none modal-content pointer-events-auto overflow-hidden">
         
         <!-- Modal Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-white/8">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-surface-700">
           <div>
-            <h3 id="modalDate" class="text-lg font-display font-semibold text-white">6 de Agosto</h3>
+            <h3 id="modalDate" class="text-lg font-serif font-semibold text-white">6 de Agosto</h3>
             <p class="text-xs text-zinc-500 mt-0.5">Recordatorios del día</p>
           </div>
           <button id="closeModal" class="w-8 h-8 flex items-center justify-center rounded-none hover:bg-surface-700 text-zinc-400 hover:text-white transition-colors">
@@ -569,7 +496,7 @@
         </div>
 
         <!-- Add Section -->
-        <div class="border-t border-white/8 glass-soft px-5 py-4 space-y-4">
+        <div class="border-t border-surface-700 bg-surface-850 px-5 py-4 space-y-4">
           
           <!-- Color + Icon selectors -->
           <div class="space-y-3">
@@ -706,9 +633,6 @@
     const monthTitle = document.getElementById('monthTitle');
     const calendarGrid = document.getElementById('calendarGrid');
     const calendarCard = document.getElementById('calendarCard');
-    const monthRemindersSection = document.getElementById('monthRemindersSection');
-    const monthRemindersGrid = document.getElementById('monthRemindersGrid');
-    const monthRemindersCount = document.getElementById('monthRemindersCount');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const themeBtn = document.getElementById('themeBtn');
@@ -898,7 +822,7 @@
       // Empty
       for (let i = 0; i < startOffset; i++) {
         const cell = document.createElement('div');
-        cell.className = 'aspect-square empty border-b border-r border-white/5';
+        cell.className = 'aspect-square empty border-b border-r border-surface-800/60';
         calendarGrid.appendChild(cell);
       }
 
@@ -908,7 +832,7 @@
         const today = isToday(currentYear, currentMonth, day);
 
         const cell = document.createElement('button');
-        cell.className = `day-cell border-b border-r border-white/5 flex flex-col items-stretch justify-start p-2 relative focus:outline-none ${today ? 'today' : ''}`;
+        cell.className = `day-cell border-b border-r border-surface-800/60 flex flex-col items-stretch justify-start p-2 relative focus:outline-none ${today ? 'today' : ''}`;
         
         // Day number
         const num = document.createElement('span');
@@ -951,11 +875,10 @@
       const rem = (7 - (total % 7)) % 7;
       for (let i = 0; i < rem; i++) {
         const cell = document.createElement('div');
-        cell.className = 'aspect-square empty border-b border-r border-white/5';
+        cell.className = 'aspect-square empty border-b border-r border-surface-800/60';
         calendarGrid.appendChild(cell);
       }
 
-      renderMonthReminders();
       renderUpcoming();
       syncSidebarToCalendarHeight();
     }
@@ -964,96 +887,29 @@
       const panel = document.querySelector('.sidebar-panel');
       const list = document.getElementById('upcomingList');
       if (!panel || !calendarCard || !list) return;
+
       if (window.innerWidth < 1280) {
         panel.style.height = '';
         panel.style.maxHeight = '';
         list.style.maxHeight = '420px';
         return;
       }
-      // Misma altura que el bloque del calendario (título + card), sin el grid de recordatorios del mes
+
+      // Altura = título del mes + card del calendario (sin contenido extra debajo)
       const nav = calendarCard.previousElementSibling;
-      const calendarBlockTop = nav ? nav.getBoundingClientRect().top : calendarCard.getBoundingClientRect().top;
-      const calendarBlockBottom = calendarCard.getBoundingClientRect().bottom;
-      const targetH = Math.max(280, Math.round(calendarBlockBottom - calendarBlockTop));
+      const top = (nav || calendarCard).getBoundingClientRect().top;
+      const bottom = calendarCard.getBoundingClientRect().bottom;
+      const targetH = Math.max(280, Math.round(bottom - top));
+
       panel.style.height = `${targetH}px`;
       panel.style.maxHeight = `${targetH}px`;
-      // Lista con scroll dentro del panel
+
       const used = Array.from(panel.children)
         .filter(el => el !== list && el.id !== 'upcomingEmpty')
         .reduce((sum, el) => sum + el.offsetHeight, 0);
       const styles = getComputedStyle(panel);
-      const pad = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+      const pad = (parseFloat(styles.paddingTop) || 0) + (parseFloat(styles.paddingBottom) || 0);
       list.style.maxHeight = `${Math.max(120, targetH - used - pad - 8)}px`;
-    }
-
-    // ==================== MONTH REMINDERS GRID ====================
-    function renderMonthReminders() {
-      if (!monthRemindersSection || !monthRemindersGrid) return;
-
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      const monthItems = [];
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const key = dateKey(currentYear, currentMonth, day);
-        const list = reminders[key] || [];
-        if (list.length === 0) continue;
-        monthItems.push({ key, day, list });
-      }
-
-      if (monthItems.length === 0) {
-        monthRemindersSection.classList.add('hidden');
-        monthRemindersGrid.innerHTML = '';
-        if (monthRemindersCount) monthRemindersCount.textContent = '';
-        return;
-      }
-
-      monthRemindersSection.classList.remove('hidden');
-      const totalCount = monthItems.reduce((sum, item) => sum + item.list.length, 0);
-      if (monthRemindersCount) {
-        monthRemindersCount.textContent = `${totalCount} recordatorio${totalCount === 1 ? '' : 's'} · ${monthItems.length} día${monthItems.length === 1 ? '' : 's'}`;
-      }
-
-      monthRemindersGrid.innerHTML = '';
-
-      monthItems.forEach(({ key, day, list }) => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'text-left glass rounded-2xl p-3 sm:p-4 hover:bg-white/5 transition-colors focus:outline-none focus:ring-1 focus:ring-white/20';
-        card.addEventListener('click', () => openModal(key, day, currentMonth));
-
-        const header = document.createElement('div');
-        header.className = 'flex items-center justify-between gap-2 mb-2.5 pb-2 border-b border-white/8';
-        const today = isToday(currentYear, currentMonth, day);
-        header.innerHTML = `
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="day-number text-sm font-medium ${today ? 'text-zinc-100' : 'text-zinc-300'}" style="${today ? 'background:#c7924a;color:#0e0e12;font-weight:700' : ''}">${day}</span>
-            <span class="text-xs text-zinc-500 truncate">${formatDateES(currentYear, currentMonth, day)}</span>
-          </div>
-          <span class="text-[10px] uppercase tracking-wider text-zinc-500 shrink-0">${list.length} item${list.length === 1 ? '' : 's'}</span>
-        `;
-        card.appendChild(header);
-
-        const listEl = document.createElement('div');
-        listEl.className = 'space-y-1.5';
-
-        list.forEach(r => {
-          const c = getColor(r.color);
-          const row = document.createElement('div');
-          row.className = `flex items-start gap-2 ${c.text}`;
-          row.innerHTML = `
-            <span class="shrink-0 mt-0.5">${ICONS[r.icon] || ICONS.check}</span>
-            <div class="min-w-0 flex-1">
-              <p class="text-sm font-medium leading-snug truncate">${escapeHTML(r.text)}</p>
-              ${r.type ? `<p class="text-[10px] uppercase tracking-wider opacity-70 mt-0.5">${escapeHTML(r.type)}</p>` : ''}
-              ${r.description ? `<p class="text-xs text-zinc-500 mt-0.5 line-clamp-2">${escapeHTML(r.description)}</p>` : ''}
-            </div>
-          `;
-          listEl.appendChild(row);
-        });
-
-        card.appendChild(listEl);
-        monthRemindersGrid.appendChild(card);
-      });
     }
 
     // ==================== UPCOMING ====================
