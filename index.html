@@ -400,12 +400,23 @@
       <!-- Sidebar: Upcoming -->
       <div class="xl:col-span-3">
         <div class="bg-surface-900 border border-surface-700 rounded-xl sm:rounded-2xl p-4 sm:p-5 h-full shadow-sm">
-          <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-white">Próximos recordatorios</h3>
             <span id="upcomingCount" class="text-xs text-zinc-500 tabular-nums"></span>
           </div>
           
-          <div id="upcomingList" class="space-y-2 max-h-[480px] overflow-y-auto pr-1">
+          <div class="mb-4">
+            <label for="upcomingSort" class="block text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-1.5">Ordenar por</label>
+            <select id="upcomingSort" class="w-full bg-surface-800 border border-surface-600 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
+              <option value="date-asc">Fecha (próximos primero)</option>
+              <option value="date-desc">Fecha (más lejanos primero)</option>
+              <option value="type">Tipo</option>
+              <option value="name">Nombre A–Z</option>
+              <option value="color">Color</option>
+            </select>
+          </div>
+          
+          <div id="upcomingList" class="space-y-2 max-h-[420px] overflow-y-auto pr-1">
             <!-- Generated -->
           </div>
           
@@ -566,7 +577,7 @@
             <div>
               <button type="submit" class="w-full px-5 py-2.5 bg-white hover:bg-zinc-100 text-surface-950 font-medium text-sm rounded-xl transition-colors flex items-center justify-center gap-1.5">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                Agregar recordatorio
+                <span>Agregar recordatorio</span>
               </button>
             </div>
           </form>
@@ -589,6 +600,7 @@
       collection,
       addDoc,
       deleteDoc,
+      updateDoc,
       doc,
       onSnapshot,
       serverTimestamp,
@@ -655,6 +667,8 @@
     let currentUser = null;
     let unsubscribeReminders = null;
     let userProfile = null;
+    let editingReminderId = null;
+    let upcomingSort = 'date-asc';
 
     // ==================== DOM ====================
     const monthTitle = document.getElementById('monthTitle');
@@ -683,6 +697,7 @@
     const upcomingList = document.getElementById('upcomingList');
     const upcomingEmpty = document.getElementById('upcomingEmpty');
     const upcomingCount = document.getElementById('upcomingCount');
+    const upcomingSortSelect = document.getElementById('upcomingSort');
     const loginBtn = document.getElementById('loginBtn');
     const userInfo = document.getElementById('userInfo');
     const userPhoto = document.getElementById('userPhoto');
@@ -914,7 +929,32 @@
 
       all.sort((a, b) => {
         if (a.expired !== b.expired) return a.expired ? 1 : -1;
-        return a.expired ? b.date - a.date : a.date - b.date;
+
+        switch (upcomingSort) {
+          case 'date-desc':
+            return b.date - a.date;
+          case 'type': {
+            const ta = (a.type || '').toLowerCase();
+            const tb = (b.type || '').toLowerCase();
+            if (ta !== tb) return ta.localeCompare(tb, 'es');
+            return a.date - b.date;
+          }
+          case 'name': {
+            const na = (a.text || '').toLowerCase();
+            const nb = (b.text || '').toLowerCase();
+            if (na !== nb) return na.localeCompare(nb, 'es');
+            return a.date - b.date;
+          }
+          case 'color': {
+            const ca = a.color || '';
+            const cb = b.color || '';
+            if (ca !== cb) return ca.localeCompare(cb);
+            return a.date - b.date;
+          }
+          case 'date-asc':
+          default:
+            return a.date - b.date;
+        }
       });
 
       upcomingList.innerHTML = '';
@@ -928,7 +968,7 @@
       upcomingEmpty.classList.add('hidden');
       upcomingCount.textContent = all.length;
 
-      all.slice(0, 14).forEach(r => {
+      all.slice(0, 20).forEach(r => {
         const c = getColor(r.color);
         const item = document.createElement('button');
         item.className = `w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-surface-800 transition-colors group border border-transparent hover:border-surface-700`;
@@ -942,6 +982,7 @@
             <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
               <p class="text-[11px] text-zinc-500">${formatShort(r.key)}</p>
               <p class="text-[11px] font-medium ${c.text}">${formatRemaining(r.key)}</p>
+              ${r.type ? `<span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-surface-800 ${c.text}">${escapeHTML(r.type)}</span>` : ''}
             </div>
           </div>
         `;
@@ -961,11 +1002,9 @@
     // ==================== MODAL ====================
     function openModal(key, day, monthIndex) {
       selectedDate = key;
-      selectedColor = 'sky';
-      selectedIcon = 'check';
+      resetReminderForm();
       const [selectedYear] = key.split('-').map(Number);
       modalDate.textContent = `${formatDateES(selectedYear, monthIndex, day)} de ${selectedYear}`;
-      renderPickers();
       renderRemindersList();
       
       setFormEnabled(Boolean(currentUser));
@@ -976,6 +1015,13 @@
     function closeModal() {
       modal.classList.add('hidden');
       selectedDate = null;
+      resetReminderForm();
+    }
+
+    function resetReminderForm() {
+      editingReminderId = null;
+      selectedColor = 'sky';
+      selectedIcon = 'check';
       reminderType.value = '';
       reminderInput.value = '';
       subjectInput.value = '';
@@ -983,6 +1029,43 @@
       otherDescription.value = '';
       academicFields.classList.add('hidden');
       otherFields.classList.add('hidden');
+      submitBtn.innerHTML = `
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        <span>Agregar recordatorio</span>
+      `;
+      renderPickers();
+    }
+
+    function startEditReminder(r) {
+      if (!r || !r.id) return;
+      editingReminderId = r.id;
+      selectedColor = r.color || 'sky';
+      selectedIcon = r.icon || 'check';
+      renderPickers();
+
+      const type = r.type || 'Otro';
+      reminderType.value = type;
+
+      const isOther = type === 'Otro';
+      const isAcademic = ['Trabajo', 'Parcial', 'Final'].includes(type);
+      academicFields.classList.toggle('hidden', !isAcademic);
+      otherFields.classList.toggle('hidden', !isOther);
+
+      if (isOther) {
+        reminderInput.value = r.title || r.text || '';
+        otherDescription.value = r.description || '';
+      } else {
+        subjectInput.value = r.subject || (r.text ? r.text.replace(/^(Trabajo|Parcial|Final):\s*/i, '') : '');
+        academicDescription.value = r.description || '';
+      }
+
+      submitBtn.innerHTML = `
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        <span>Guardar cambios</span>
+      `;
+
+      addForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      setTimeout(() => (isOther ? reminderInput : subjectInput).focus(), 50);
     }
 
     function renderRemindersList() {
@@ -998,7 +1081,7 @@
       emptyState.classList.add('hidden');
       remindersContainer.classList.remove('hidden');
 
-      list.forEach((r, idx) => {
+      list.forEach((r) => {
         const c = getColor(r.color);
         const item = document.createElement('div');
         item.className = `group flex items-start gap-3 p-3 rounded-xl ${c.bg} border ${c.border}`;
@@ -1017,12 +1100,24 @@
               <span class="text-[11px] font-medium ${isReminderExpired(selectedDate) ? 'text-rose-400' : c.text}">${formatRemaining(selectedDate)}</span>
             </div>
           </div>
-          <button class="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all mt-0.5" data-idx="${idx}">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
+          <div class="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity mt-0.5">
+            <button type="button" class="edit-btn p-1.5 rounded-lg text-zinc-500 hover:text-sky-400 hover:bg-sky-500/10 transition-all" title="Editar">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </button>
+            <button type="button" class="delete-btn p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all" title="Eliminar">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
         `;
         
-        item.querySelector('button').addEventListener('click', () => deleteReminder(r.id));
+        item.querySelector('.edit-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          startEditReminder(r);
+        });
+        item.querySelector('.delete-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteReminder(r.id);
+        });
         remindersContainer.appendChild(item);
       });
     }
@@ -1044,28 +1139,29 @@
       }
 
       const displayTitle = isOther ? title : `${type}: ${title}`;
+      const payload = {
+        text: displayTitle,
+        type,
+        subject: isOther ? '' : title,
+        title: isOther ? title : '',
+        description,
+        date: selectedDate,
+        color: selectedColor,
+        icon: selectedIcon
+      };
 
       try {
         submitBtn.disabled = true;
-        await addDoc(collection(db, 'users', currentUser.uid, 'reminders'), {
-          text: displayTitle,
-          type,
-          subject: isOther ? '' : title,
-          title: isOther ? title : '',
-          description,
-          date: selectedDate,
-          color: selectedColor,
-          icon: selectedIcon,
-          createdAt: serverTimestamp()
-        });
-        reminderType.value = '';
-        reminderInput.value = '';
-        subjectInput.value = '';
-        academicDescription.value = '';
-        otherDescription.value = '';
-        academicFields.classList.add('hidden');
-        otherFields.classList.add('hidden');
-          reminderType.focus();
+        if (editingReminderId) {
+          await updateDoc(doc(db, 'users', currentUser.uid, 'reminders', editingReminderId), payload);
+        } else {
+          await addDoc(collection(db, 'users', currentUser.uid, 'reminders'), {
+            ...payload,
+            createdAt: serverTimestamp()
+          });
+        }
+        resetReminderForm();
+        reminderType.focus();
       } catch (error) {
         console.error('Error guardando el recordatorio:', error);
         alert('No se pudo guardar el recordatorio. Revisá las reglas de Firestore.');
@@ -1142,6 +1238,10 @@
           reminders[data.date].push({
             id: documentSnapshot.id,
             text: data.text || '',
+            type: data.type || '',
+            subject: data.subject || '',
+            title: data.title || '',
+            description: data.description || '',
             time: data.time || '',
             color: data.color || 'sky',
             icon: data.icon || 'check'
@@ -1365,6 +1465,11 @@
 
     closeModalBtn.addEventListener('click', closeModal);
     modalBackdrop.addEventListener('click', closeModal);
+
+    upcomingSortSelect.addEventListener('change', () => {
+      upcomingSort = upcomingSortSelect.value;
+      renderUpcoming();
+    });
 
     reminderType.addEventListener('change', () => {
       const isOther = reminderType.value === 'Otro';
